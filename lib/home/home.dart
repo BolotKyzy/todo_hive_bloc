@@ -29,6 +29,14 @@ class HomePage extends StatelessWidget {
           }
         }), builder: (context, state) {
           if (state is HomeInitial) {
+            if (state.error != null) {
+              showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                        title: Text('Error'),
+                        content: Text(state.error!),
+                      ));
+            }
             return Column(
               children: [
                 TextField(
@@ -40,10 +48,22 @@ class HomePage extends StatelessWidget {
                   decoration: InputDecoration(labelText: 'Password'),
                   controller: passwordField,
                 ),
-                ElevatedButton(
-                    onPressed: () => BlocProvider.of<HomeBloc>(context).add(
-                        LoginEvent(usernameField.text, passwordField.text)),
-                    child: Text('LOGIN'))
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ElevatedButton(
+                        onPressed: () => BlocProvider.of<HomeBloc>(context).add(
+                            LoginEvent(usernameField.text, passwordField.text)),
+                        child: Text('LOGIN')),
+                    ElevatedButton(
+                        onPressed: () {
+                          BlocProvider.of<HomeBloc>(context).add(
+                              RegisterAccountEvent(
+                                  usernameField.text, passwordField.text));
+                        },
+                        child: Text('Register'))
+                  ],
+                )
               ],
             );
           }

@@ -11,7 +11,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final TodoService _todo;
 
   HomeBloc(this._auth, this._todo) : super(RegisteringServiceState()) {
-    on<LoginEvent>((event, emitter) async {
+    on<LoginEvent>((event, emit) async {
       final _user =
           await _auth.authenticationUser(event.username, event.password);
       if (_user != null) {
@@ -20,6 +20,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
 
       // print(event);
+    });
+    on<RegisterAccountEvent>((event, emit) async {
+      final result = await _auth.createUser(event.username, event.password);
+      switch (result) {
+        case UserCreationResult.success:
+          emit(SuccesfullLoginState(event.username));
+          break;
+        case UserCreationResult.failuer:
+          emit(HomeInitial(error: 'There is been an error '));
+          break;
+        case UserCreationResult.already_exits:
+          emit(HomeInitial(error: 'User already exists'));
+
+          break;
+      }
     });
 
     on<RegisterServiceEvent>(((event, emit) async {
